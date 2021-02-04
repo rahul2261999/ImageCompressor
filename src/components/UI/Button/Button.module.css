@@ -1,0 +1,19 @@
+
+.btn{
+    display: inline-block;
+    padding: 8px 10px;
+    border: 0;
+    outline: none;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btnSuccess{
+    background-color: green;
+}
+
+.center{
+    display: block;
+    margin: auto;
+}
