@@ -1,19 +1,21 @@
-
-.btn{
-    display: inline-block;
-    padding: 8px 10px;
-    border: 0;
-    outline: none;
-    color: white;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
+.btn {
+  display: inline-block;
+  padding: 8px 10px;
+  border: 0;
+  outline: none;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
 }
-.btnSuccess{
-    background-color: green;
+.btnSuccess {
+  background-color: green;
+}
+.btnPrimary {
+  background-color: #1363cc;
 }
 
-.center{
-    display: block;
-    margin: auto;
+.center {
+  display: block;
+  margin: auto;
 }

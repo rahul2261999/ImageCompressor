@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Compression from 'browser-image-compression'
 import downloadIcon from '../assests/download.png'
+import jszip from 'jszip'
+import { save } from 'save-file'
 
 
 import UploadImage from '../components/Image/Image'
@@ -18,39 +20,54 @@ class Compressor extends Component {
 
     onChangeHandler = (e) => {
         const newImages = Array.from(e.target.files);
-        this.setState({ 'images': newImages })
+        this.setState({ 'images': newImages, compressImages: [] })
 
     }
 
     onCompressedHandler = async () => {
         this.setState({ show: true })
-        const imgCompress = { ...this.state.images }
+        const imgCompress = [...this.state.images]
         let compressImage = []
 
-        for (let i in imgCompress) {
-            const file = imgCompress[i]
-            await Compression(file, {
-                initialQuality: 0.6,
-                onProgress: function (progress) {
-                    console.log(progress);
+        if (imgCompress.length > 0) {
+            for (let i in imgCompress) {
+                const file = imgCompress[i]
+                await Compression(file, {
+                    initialQuality: 0.6,
+                    onProgress: function (progress) {
+                        console.log(progress);
 
-                }
-                // eslint-disable-next-line no-loop-func
-            }).then(res => {
+                    }
+                    // eslint-disable-next-line no-loop-func
+                }).then(res => {
 
-                const AfterCompression = compressImage.concat(res);
-                compressImage = [...AfterCompression]
+                    const AfterCompression = compressImage.concat(res);
+                    compressImage = [...AfterCompression]
 
 
-            }).catch(err => console.log(err))
+                }).catch(err => console.log(err))
+            }
         }
 
         this.setState({ compressImages: compressImage, show: false })
     }
-    // onImageDownloadHandler = (key){
-    //     const images = [this.state.images];
 
-    // }
+    downloadAllImage = () => {
+        var zip = new jszip();
+
+        var img = zip.folder("images");
+
+        for (let i in this.state.compressImages) {
+            const imgData = this.state.compressImages[i]
+
+            img.file(imgData.name, imgData, { base64: true });
+        }
+
+        zip.generateAsync({ type: "blob" }).then(function (content) {
+            // see FileSaver.js
+            save(content, "compress.zip");
+        });
+    }
 
 
 
@@ -58,19 +75,28 @@ class Compressor extends Component {
         let preview = ''
 
         if (this.state.images !== null) {
-            preview = <ImagePreview images={this.state.images} />
+            preview = < ImagePreview images={this.state.images}
+            />
         }
 
-        let compressImg = this.state.show ? <Spinner /> : null
+        let compressImg = this.state.show ? < Spinner /> : null
         console.log(this.state.show);
         if (this.state.compressImages.length > 0) {
-            compressImg = <ImagePreview images={this.state.compressImages} icon={downloadIcon}  />
+            compressImg = <Aux>
+                <Button class={['btnPrimary', 'center']} onclicked={this.downloadAllImage} text='Download All Images' />
+                < ImagePreview images={this.state.compressImages}
+                    icon={downloadIcon}
+                />
+            </Aux>
+
         }
 
         return (
-            <Aux>
-                <UploadImage onchange={this.onChangeHandler} />
-                <Button class={['btnSuccess', 'center']} onclicked={this.onCompressedHandler} text='Compress Image' />
+            <Aux >
+                < UploadImage onchange={this.onChangeHandler} />
+                < Button class={['btnSuccess', 'center']}
+                    onclicked={this.onCompressedHandler}
+                    text='Compress Image' />
                 {preview}
                 {compressImg}
             </Aux>
